@@ -1,7 +1,14 @@
+
+/**
+ * 系统级：10--
+ * 数据级: 20--
+ * 业务级：30--
+ */
 interface IcodeItem {
   code: number;
   msg: string;
 }
+
 enum CodesKey {
   UNKNOW = 'UNKNOW',
   SUCCESS = 'SUCCESS',
@@ -22,12 +29,6 @@ export type IcodesMap = {
 }
 
 export default function initCodes(app: App) {
-  /**
-   * init codes
-   * 系统级：10--
-   * 数据级: 20--
-   * 业务级：30--
-   */
   app.context.codes = {
     [CodesKey.SUCCESS]: {
       code: 1000,

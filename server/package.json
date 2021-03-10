@@ -1,5 +1,5 @@
 {
-  "name": "common-admin-server",
+  "name": "common-management-system-server",
   "version": "1.0.0",
   "main": "dist/index.js",
   "license": "MIT",

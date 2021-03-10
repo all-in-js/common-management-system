@@ -1,0 +1,7 @@
+:root, [data-theme="light-blue"] {
+  --main-color: #1890ff;
+}
+
+[data-theme="dark"] {
+  --main-color: #1890ff;
+}
