@@ -1,5 +1,10 @@
 <template>
-  <nav-bar></nav-bar>
+  <div>
+    <nav-bar />
+    <div class="main-content">
+      <router-view />
+    </div>
+  </div>
 </template>
 
 <script lang="ts">
@@ -13,3 +18,8 @@ export default defineComponent({
   }
 })
 </script>
+<style lang="scss" scoped>
+.main-content {
+  display: flex;
+}
+</style>

@@ -5,7 +5,8 @@
       <span class="nav-logo-txt">CMS</span>
     </div>
     <div class="nav-right-items">
-      <div class="nav-item">关于</div>
+      <div class="nav-item">用户管理</div>
+      <div class="nav-item">系统设置</div>
       <div class="nav-item">Github</div>
       <div class="nav-item">En/Zh</div>
     </div>
@@ -36,7 +37,7 @@ export default defineComponent({
   line-height: 60px;
   display: inline-block;
   vertical-align: top;
-  font-size: 24px;
+  font-size: 18px;
   margin-left: 10px;
   color: #fff;
 }
@@ -50,7 +51,6 @@ export default defineComponent({
   color: #fff;
 }
 .nav-logo {
-  height: 44px;
-  margin-top: 8px;
+  height: 40px;
 }
 </style>
