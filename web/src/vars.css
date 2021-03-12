@@ -1,5 +1,11 @@
 :root, [data-theme="light-blue"] {
+  /* color */
+  --global-background-color: #f6f6f6;
   --main-color: #1890ff;
+
+  /* layout */
+  --nav-bar-height: 60px;
+  --content-left-width: 320px;
 }
 
 [data-theme="dark"] {

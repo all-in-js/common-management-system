@@ -1,6 +1,6 @@
 import { createApp } from 'vue'
 import { createRouter, createWebHistory } from 'vue-router'
-import { Button, Menu, Breadcrumb, PageHeader } from 'ant-design-vue'
+import { Button, Menu, Breadcrumb, PageHeader, Form, Input, Radio } from 'ant-design-vue'
 import App from './app.vue'
 import Users from './pages/users.vue'
 import 'ant-design-vue/dist/antd.css'
@@ -23,6 +23,9 @@ app
 .use(router)
 .use(Button)
 .use(Menu)
+.use(Form)
+.use(Input)
+.use(Radio)
 .use(Breadcrumb)
 .use(PageHeader)
 

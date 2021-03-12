@@ -28,13 +28,13 @@ export default defineComponent({
 <style lang="scss" scoped>
 .nav-bar {
   padding: 0 15px;
-  height: 60px;
-  line-height: 60px;
+  height: var(--nav-bar-height);
+  line-height: var(--nav-bar-height);
   display: flex;
   background: var(--main-color);
 }
 .nav-logo-txt {
-  line-height: 60px;
+  line-height: var(--nav-bar-height);
   display: inline-block;
   vertical-align: top;
   font-size: 18px;

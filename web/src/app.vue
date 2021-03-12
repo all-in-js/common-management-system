@@ -1,9 +1,7 @@
 <template>
-  <div>
-    <nav-bar />
-    <div class="main-content">
-      <router-view />
-    </div>
+  <nav-bar />
+  <div class="main-content">
+    <router-view />
   </div>
 </template>
 
@@ -18,8 +16,3 @@ export default defineComponent({
   }
 })
 </script>
-<style lang="scss" scoped>
-.main-content {
-  display: flex;
-}
-</style>

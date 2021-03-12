@@ -2,3 +2,30 @@
   margin: 0;
   padding: 0;
 }
+
+::-webkit-scrollbar-track-piece {
+  background-color: #f9f9f9
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px
+}
+
+::-webkit-scrollbar-thumb {
+  background: #ccc;
+  cursor: pointer;
+  border-radius: 1px;
+  border: 1px solid #f9f9f9;
+  border-top: 0;
+  border-bottom: 0
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #888;
+  cursor: pointer
+}
+
+body {
+  background: var(--global-background-color);
+}
