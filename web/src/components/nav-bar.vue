@@ -5,9 +5,9 @@
       <span class="nav-logo-txt">CMS</span>
     </div>
     <div class="nav-right-items">
-      <div class="nav-item">用户管理</div>
-      <div class="nav-item">系统设置</div>
-      <div class="nav-item">Github</div>
+      <router-link to="/users" class="nav-item">用户管理</router-link>
+      <router-link to="/system" class="nav-item">系统管理</router-link>
+      <a target="_blank" href="https://github.com/all-in-js/common-management-system" class="nav-item">Github</a>
       <div class="nav-item">En/Zh</div>
     </div>
   </nav>
@@ -47,8 +47,15 @@ export default defineComponent({
   justify-content: flex-end;
 }
 .nav-item {
-  margin-left: 20px;
-  color: #fff;
+  margin-left: 25px;
+  color: var(--nav-color);
+  &.router-link-active {
+    font-weight: bold;
+    color: var(--nav-active-color);
+  }
+  &:hover {
+    color: var(--nav-active-color);
+  }
 }
 .nav-logo {
   height: 40px;

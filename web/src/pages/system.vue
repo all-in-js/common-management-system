@@ -1,14 +1,14 @@
 <template>
-  <content-frame class="users-content">
+  <content-frame class="system-content">
     <template v-slot:left>
       <search-form
         @reset="reset"
         :back-icon="false"
-        title="用户管理">
+        title="系统管理">
         <a-form
           layout="vertical">
-          <a-form-item label="用户名">
-            <a-input placeholder="请输入用户名"></a-input>
+          <a-form-item label="模块名">
+            <a-input placeholder="请输入模块名"></a-input>
           </a-form-item>
           <a-form-item label="状态">
             <a-radio-group v-model:value="status">
@@ -23,7 +23,11 @@
     <template v-slot:right>
       <div class="result-head">
         <span>结果列表：共 5 条</span>
-        <a-button type="primary">新建用户</a-button>
+        <div class="result-ctrls">
+          <a-button
+            @click="toggleNewModule"
+            type="primary">新建模块</a-button>
+        </div>
       </div>
       <a-table
         row-key="_id"
@@ -32,10 +36,15 @@
         ></a-table>
     </template>
     <a-modal
-      v-model:visible="showCreateUser"
-      title="新建用户"
-      >
-      
+      v-model:visible="showCreateNewModule">
+      <a-form>
+        <a-form-item label="模块名称">
+          <a-input placeholder="请输入模块名称"></a-input>
+        </a-form-item>
+        <a-form-item label="模块路径">
+          <a-input placeholder="请输入模块路径"></a-input>
+        </a-form-item>
+      </a-form>
     </a-modal>
   </content-frame>
 </template>
@@ -55,56 +64,51 @@ export default defineComponent({
         {
           _id: 1,
           name: '12311',
-          role: 1,
-          authList: 'qwqwqw',
+          path: 'qwqwqw',
           status: 1
         },
         {
           _id: 2,
           name: 'ssaasssa',
-          role: 1,
-          authList: 'qwqwqw',
+          path: 'qwqwqw',
           status: 1
         },
         {
           _id: 3,
           name: 'assas',
-          role: 1,
-          authList: 'qwqwqw',
+          path: 'qwqwqw',
           status: 1
         }
       ],
       columns: [
         {
-          title: '用户名',
+          title: '模块名',
           dataIndex: 'name',
-          width: '20%'
+          width: '25%'
         },
         {
-          title: '角色',
-          dataIndex: 'role',
-          width: '20%'
-        },
-        {
-          title: '权限列表',
-          dataIndex: 'authList',
-          width: '20%'
+          title: '路径',
+          dataIndex: 'path',
+          width: '25%'
         },
         {
           title: '状态',
           dataIndex: 'status',
-          width: '20%'
+          width: '25%'
         },
         {
           title: '操作',
           dataIndex: 'operation',
-          width: '20%'
+          width: '25%'
         }
       ],
-      showCreateUser: false,
+      showCreateNewModule: false,
       status: '0'
     });
     return {
+      toggleNewModule() {
+        state.showCreateNewModule = !state.showCreateNewModule;
+      },
       reset() {
         console.log('reset');
       },

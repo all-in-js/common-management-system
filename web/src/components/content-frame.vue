@@ -6,6 +6,7 @@
     <div class="content-right">
       <slot name="right"></slot>
     </div>
+    <slot></slot>
   </div>
 </template>
 <style lang="scss" scoped>

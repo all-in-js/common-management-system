@@ -1,7 +1,9 @@
 :root, [data-theme="light-blue"] {
   /* color */
-  --global-background-color: #f6f6f6;
+  --global-background-color: #dce1e5;
   --main-color: #1890ff;
+  --nav-color: #dee7ef;
+  --nav-active-color: #ffffff;
 
   /* layout */
   --nav-bar-height: 60px;
