@@ -12,4 +12,5 @@ export default function initCollections(app: App, mongoClient: MongoClient) {
    * user model
    */
   app.context.$user = $collection('users');
+  app.context.$system = $collection('system');
 }

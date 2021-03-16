@@ -2,6 +2,13 @@
 # yarn lockfile v1
 
 
+"@all-in-js/fetch-functions-api@^1.0.3":
+  version "1.0.3"
+  resolved "https://registry.npm.taobao.org/@all-in-js/fetch-functions-api/download/@all-in-js/fetch-functions-api-1.0.3.tgz#470b8721a5ddf83318be239c00e024dc64cb74c2"
+  integrity sha1-RwuHIaXd+DMYviOcAOAk3GTLdMI=
+  dependencies:
+    deepmerge "^4.2.2"
+
 "@ant-design-vue/use@^0.0.1-0":
   version "0.0.1-alpha.9"
   resolved "https://registry.npm.taobao.org/@ant-design-vue/use/download/@ant-design-vue/use-0.0.1-alpha.9.tgz#b7df26150469391383ba1c2dd4ba250267a58411"
@@ -270,6 +277,11 @@ csstype@^2.6.8:
   version "2.6.16"
   resolved "https://registry.npm.taobao.org/csstype/download/csstype-2.6.16.tgz#544d69f547013b85a40d15bff75db38f34fe9c39"
   integrity sha1-VE1p9UcBO4WkDRW/912zjzT+nDk=
+
+deepmerge@^4.2.2:
+  version "4.2.2"
+  resolved "https://registry.npm.taobao.org/deepmerge/download/deepmerge-4.2.2.tgz?cache=0&sync_timestamp=1572279556265&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Fdeepmerge%2Fdownload%2Fdeepmerge-4.2.2.tgz#44d2ea3679b8f4d4ffba33f03d865fc1e7bf4955"
+  integrity sha1-RNLqNnm49NT/ujPwPYZfwee/SVU=
 
 dom-align@^1.10.4:
   version "1.12.0"

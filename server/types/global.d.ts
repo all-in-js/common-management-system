@@ -12,6 +12,7 @@ declare global {
   interface IExtendContext {
     $collection: (col: string) => MongoDB.Collection;
     $user: MongoDB.Collection;
+    $system: MongoDB.Collection;
     $jwt: IJWT;
     codes: IcodesMap;
   }
