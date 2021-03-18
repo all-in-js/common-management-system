@@ -1,3 +1,4 @@
+import MongoDB from 'mongodb';
 
 const existsSystemModule = ['/users', '/system', '/docs'];
 
@@ -61,16 +62,41 @@ export async function addModule(cx: KoaContext, vars: ModuleParams) {
   } 
 }
 
+interface SearchModulesParams {
+  pageSize?: number;
+  pageNo?: number;
+  name?: string;
+  using?: number;
+}
 /**
  * 模块列表
  */
-export async function modules(cx: KoaContext) {
-  const mods = await cx.$system.find({}).sort({createTime: -1}).toArray();
+export async function modules(cx: KoaContext, vars: SearchModulesParams) {
+  const {
+    pageSize = 10,
+    pageNo = 1,
+    name,
+    using
+  } = vars;
+  const query: MongoDB.ObjectQuerySelector<SearchModulesParams> = {};
+  if (name !== undefined && name !== '') {
+    query.name = {
+      $regex: new RegExp(name, 'ig')
+    };
+  }
+  if (using !== undefined && using !== 0) {
+    query.using = using as MongoDB.QuerySelector<number>;
+  }
+
+  const total = await cx.$system.countDocuments(query);
+  const mods = await cx.$system.find(query).sort({createTime: -1}).limit(pageSize).skip((pageNo - 1) * pageSize).toArray();
+  
   const {
     code
   } = cx.codes.SUCCESS;
   return {
     code,
+    total,
     data: mods
   }
 }

@@ -10,9 +10,11 @@
       <span>检索条件</span>
       <div class="search-btns">
         <a-button
-          @click="reset"
+          @click="resetFields"
           type="link">重置</a-button>
-        <a-button type="primary">检索</a-button>
+        <a-button
+          @click="search"
+          type="primary">检索</a-button>
       </div>
     </div>
     <div class="search-fields">
@@ -21,18 +23,24 @@
   </div>
 </template>
 <script>
-import { defineComponent } from 'vue'
+import { defineComponent, reactive } from 'vue'
+import { useForm } from '@ant-design-vue/use'
 
 export default defineComponent({
   props: {
     backIcon: Boolean,
-    title: String
+    title: String,
+    subtitle: String,
+    searchForm: Object
   },
   setup: (props, cx) => {
-    
+    const {
+      resetFields
+    } = useForm(props.searchForm, reactive({}));
     return {
-      reset() {
-        cx.emit('reset');
+      resetFields() {
+        resetFields();
+        cx.emit('search');
       },
       search() {
         cx.emit('search');
