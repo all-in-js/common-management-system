@@ -1,10 +1,14 @@
 <template>
-  <slot></slot>
   <slot
-    name="data"
-    :res="res"></slot>
-  <a-spin v-if="loading">
-    <slot name="loading">loading</slot>
+    v-if="$slots.loading"
+    name="loading"></slot>
+  <a-spin
+    v-bind="spinProps"
+    :spinning="!$slots.loading && loading">
+    <slot></slot>
+    <slot
+      name="data"
+      :res="res"></slot>
   </a-spin>
   <slot
     v-if="error"
@@ -22,6 +26,9 @@ const FetchData = defineComponent({
     method: String,
     url: String,
     params: Object,
+    spinProps: {
+      type: Object,
+    },
     cached: Boolean,
     noCached: Boolean
   },

@@ -61,7 +61,6 @@ import { defineComponent, reactive, toRefs, ref } from 'vue'
 import ContentFrame from '../components/content-frame.vue'
 import SearchForm from '../components/search-form.vue'
 import CreateNewModule from '../components/create-new-module.vue'
-import FetchData from '../components/fetch-data.vue'
 
 const columns = [
   {
@@ -93,8 +92,7 @@ export default defineComponent({
   components: {
     ContentFrame,
     SearchForm,
-    CreateNewModule,
-    FetchData
+    CreateNewModule
   },
   setup() {
     const newModuleRef = ref(null);
