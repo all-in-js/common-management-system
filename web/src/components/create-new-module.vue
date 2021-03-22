@@ -4,24 +4,27 @@
     @cancel="closeCreateNewModule"
     @ok="submit">
     <a-form
+      ref="formRef"
+      :model="formState"
+      :rules="rules"
       :label-col="{ span: 6 }"
       class="new-module-form">
       <a-form-item
-        v-bind="validateInfos.name"
+        name="name"
         label="模块名称">
         <a-input
           v-model:value="formState.name"
           placeholder="请输入模块名称"></a-input>
       </a-form-item>
       <a-form-item
-        v-bind="validateInfos.path"
+        name="path"
         label="模块路径">
         <a-input
           v-model:value="formState.path"
           placeholder="请输入模块路径"></a-input>
       </a-form-item>
       <a-form-item
-        v-bind="validateInfos.using"
+        using="using"
         label="状态">
         <a-radio-group v-model:value="formState.using">
           <a-radio :value="1">启用</a-radio>
@@ -32,13 +35,16 @@
   </a-modal>
 </template>
 <script lang="ts">
-import { ComponentInternalInstance, getCurrentInstance, defineComponent, reactive, toRefs, toRaw } from 'vue';
-import { useForm } from '@ant-design-vue/use';
+import { ComponentInternalInstance, getCurrentInstance, defineComponent, reactive, toRefs, toRaw, watch, ref } from 'vue';
 
 export default defineComponent({
+  props: {
+    data: Object
+  },
   setup(props, cx) {
     const instance: ComponentInternalInstance = getCurrentInstance();
     const cxProps = instance.appContext.config.globalProperties;
+    const formRef = ref();
     const state = reactive({
       showCreateNewModule: false,
       formState: {
@@ -48,7 +54,19 @@ export default defineComponent({
       }
     });
 
-    const rules = reactive({
+    watch(() => props.data, (v) => {
+      if (v) {
+        state.formState = v as any;
+      } else {
+        state.formState = {
+          name: '',
+          path: '',
+          using: 1
+        };
+      }
+    });
+
+    const rules = {
       name: [
         {
           required: true,
@@ -63,10 +81,7 @@ export default defineComponent({
           message: '请输入模块路径'
         }
       ]
-    });
-
-    // 新建模块表单
-    const { resetFields, validate, validateInfos } = useForm(state.formState, rules);
+    };
 
     const closeCreateNewModule = function() {
       resetFields();
@@ -81,28 +96,34 @@ export default defineComponent({
     const addModule = async function(data) {
       const { code, msg } = await cxProps.$fetch.post('api/addModule', data);
       if (code === 1000) {
+        resetFields();
         cxProps.$message.success(msg);
         toggleNewModule();
-        cx.emit('postAddModule');
+        cx.emit('postNewModule');
       } else {
         cxProps.$message.error(msg);
       }
     }
 
     // 提交新建模块请求
-    const submit = async function() {
-      validate()
+    async function submit() {
+      formRef.value.validate()
       .then(() => {
         const formState = toRaw(state.formState);
         addModule(formState);
       });
     }
 
+    function resetFields() {
+      formRef.value.resetFields();
+    };
+
     return {
       submit,
-      validateInfos,
+      formRef,
       closeCreateNewModule,
       toggleNewModule,
+      rules,
       ...toRefs(state)
     }
   }

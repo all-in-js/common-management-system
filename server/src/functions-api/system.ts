@@ -100,3 +100,30 @@ export async function modules(cx: KoaContext, vars: SearchModulesParams) {
     data: mods
   }
 }
+
+interface DeleteParams {
+  id?: string;
+}
+/**
+ * 删除模块
+ */
+export async function deleteModule(cx: KoaContext, vars: DeleteParams) {
+  const {
+    id
+  } = vars;
+  if (!id) {
+    const {
+      code,
+      msg
+    } = cx.codes.INVALID_REQUEST_PARAMS;
+    return {
+      code,
+      msg: `${msg}: 'id' expected.`
+    };
+  }
+  await cx.$system.deleteOne({ _id: new MongoDB.ObjectID(id) });
+  return {
+    code: cx.codes.SUCCESS.code,
+    msg: '删除成功'
+  }
+}

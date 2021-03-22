@@ -1,14 +1,16 @@
 <template>
   <slot
-    v-if="loading"
+    v-if="useLoading && loading"
     name="loading">loading...</slot>
   <slot
-    v-else-if="error"
+    v-if="error"
     name="error">some err...</slot>
   <template v-else>
     <slot></slot>
     <slot
       name="data"
+      :error="error"
+      :loading="loading"
       :res="res"></slot>
   </template>
 </template>
@@ -18,6 +20,13 @@ import { defineComponent, reactive, toRefs, onMounted } from 'vue';
 const DataContainer = defineComponent({
   name: 'data-container',
   props: {
+    /**
+     * 是否使用内置的loading
+     */
+    useLoading: {
+      type: Boolean,
+      default: true
+    },
     method: String,
     url: String,
     params: Object,
@@ -26,6 +35,7 @@ const DataContainer = defineComponent({
     noCached: Boolean
   },
   setup({
+    useLoading,
     method = 'post',
     url,
     params,
@@ -38,6 +48,7 @@ const DataContainer = defineComponent({
     });
     const getData = async function() {
       state.loading = true;
+      
       let res;
       try {
         const opts = Object.assign(DataContainer.headers, options);
@@ -54,6 +65,7 @@ const DataContainer = defineComponent({
       } catch(e) {
         state.error = e;
       }
+
       state.loading = false;
     }
 

@@ -27,10 +27,11 @@
     </template>
     <template v-slot:right>
       <fetch-data
+        :use-loading="false"
         ref="getModulesRef"
         url="api/modules"
         :params="searchForm">
-        <template #data="{ res }">
+        <template #data="{ res, loading }">
           <div class="result-head">
             <span>结果列表：共 {{ res.total }} 条</span>
             <div class="result-ctrls">
@@ -41,23 +42,41 @@
           </div>
           <a-table
             row-key="_id"
+            :loading="loading"
             :data-source="res.data"
-            :columns="columns">
+            :columns="columns"
+            :scroll="{y: scrollY}"
+            :pagination="getPagination(res.total)">
             <template v-slot:using="{ text }">
               <span class="using" v-if="text === 1">启用中</span>
               <span class="forbidden" v-else>禁用中</span>
-            </template>  
+            </template>
+            <template v-slot:operation="{ record }">
+              <div>
+                <a-button
+                  type="link"
+                  @click="() => showEditModule(record)">编辑</a-button>
+                <a-popconfirm
+                  title="确认删除该模块吗？"
+                  ok-text="确定"
+                  cancel-text="取消"
+                  @confirm="() => deleteModule(record._id)">
+                  <a-button type="link">删除</a-button>
+                </a-popconfirm>
+              </div>
+            </template>
           </a-table>
         </template>
       </fetch-data>
     </template>
     <create-new-module
       ref="newModuleRef"
+      :data="editData"
       @postNewModule="postNewModule" />
   </content-frame>
 </template>
 <script lang="ts">
-import { defineComponent, reactive, toRefs, ref } from 'vue'
+import { ComponentInternalInstance, getCurrentInstance, defineComponent, reactive, toRefs, ref } from 'vue'
 import ContentFrame from '../components/content-frame.vue'
 import SearchForm from '../components/search-form.vue'
 import CreateNewModule from '../components/create-new-module.vue'
@@ -84,6 +103,10 @@ const columns = [
   {
     title: '操作',
     dataIndex: 'operation',
+    slots: {
+      customRender: 'operation'
+    },
+    align: 'center',
     width: '25%'
   }
 ];
@@ -95,15 +118,20 @@ export default defineComponent({
     CreateNewModule
   },
   setup() {
+    const instance: ComponentInternalInstance = getCurrentInstance();
+    const cxProps = instance.appContext.config.globalProperties;
     const newModuleRef = ref(null);
     const getModulesRef = ref(null);
+    const scrollY = window.innerHeight - 240;
     const state = reactive({
+      scrollY,
+      editData: null,
       dataSource: [],
       columns,
       searchForm: {
         name: '',
         using: 0,
-        pageSize: 10,
+        pageSize: 30,
         pageNo: 1
       }
     });
@@ -112,12 +140,50 @@ export default defineComponent({
       getModulesRef.value.getData();
     }
 
+    function getPagination(total) {
+      return {
+        total,
+        pageSize: 30,
+        onChange(page, pageSize) {
+          state.searchForm.pageSize = pageSize;
+          state.searchForm.pageNo = page;
+          getModules();
+        }
+      }
+    }
+
+    async function deleteModule(id) {
+      const {
+        code,
+        msg
+      } = await cxProps.$fetch.post('api/deleteModule', { id });
+      if (code === 1000) {
+        cxProps.$message.success(msg);
+        getModules();
+      } else {
+        cxProps.$message.error(msg);
+      }
+    }
+
+    async function showEditModule(row) {
+      state.editData = {
+        name: row.name,
+        path: row.path,
+        using: row.using
+      };
+      newModuleRef.value.toggleNewModule();
+    }
+
     return {
       newModuleRef,
       getModulesRef,
+      getPagination,
       postNewModule: getModules,
       search: getModules,
+      deleteModule,
+      showEditModule,
       toggleNewModule() {
+        state.editData = null;
         newModuleRef.value.toggleNewModule();
       },
       ...toRefs(state)

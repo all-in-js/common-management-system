@@ -1,6 +1,6 @@
 import { createApp } from 'vue'
 import { createRouter, createWebHistory } from 'vue-router'
-import { Button,  Checkbox, Menu, Breadcrumb, PageHeader, Form, Input, Radio, Table, Modal, message } from 'ant-design-vue'
+import { Button,  Checkbox, Menu, Breadcrumb, Popconfirm, PageHeader, Form, Input, Radio, Table, Modal, message } from 'ant-design-vue'
 import Fetch from '@all-in-js/fetch-functions-api'
 import App from './app.vue'
 import Login from './pages/login.vue'
@@ -50,6 +50,7 @@ app
 .use(Modal)
 .use(Breadcrumb)
 .use(PageHeader)
+.use(Popconfirm)
 
 app.component('fetch-data', fetchDataContainer.create({
   async serviceHandler(method: string, url: string, params?: object) {
