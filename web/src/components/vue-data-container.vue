@@ -3,7 +3,7 @@
     v-if="useLoading && loading"
     name="loading">loading...</slot>
   <slot
-    v-if="error"
+    v-else-if="error"
     name="error">some err...</slot>
   <template v-else>
     <slot></slot>
@@ -14,18 +14,15 @@
       :res="res"></slot>
   </template>
 </template>
-<script lang="ts">
-import { defineComponent, reactive, toRefs, onMounted } from 'vue';
+<script >
+import { reactive, toRefs, onMounted } from 'vue';
 
-const DataContainer = defineComponent({
+const DataContainer = {
   name: 'data-container',
   props: {
-    /**
-     * 是否使用内置的loading
-     */
     useLoading: {
       type: Boolean,
-      default: true
+      default: false
     },
     method: String,
     url: String,
@@ -35,7 +32,6 @@ const DataContainer = defineComponent({
     noCached: Boolean
   },
   setup({
-    useLoading,
     method = 'post',
     url,
     params,
@@ -48,7 +44,6 @@ const DataContainer = defineComponent({
     });
     const getData = async function() {
       state.loading = true;
-      
       let res;
       try {
         const opts = Object.assign(DataContainer.headers, options);
@@ -65,12 +60,11 @@ const DataContainer = defineComponent({
       } catch(e) {
         state.error = e;
       }
-
       state.loading = false;
     }
 
     onMounted(() => {
-      console.log('rendered data container.');
+      console.log('rendered vue3 data container.');
       getData();
     });
 
@@ -79,7 +73,7 @@ const DataContainer = defineComponent({
       ...toRefs(state)
     }
   }
-});
+};
 
 export default DataContainer;
 
