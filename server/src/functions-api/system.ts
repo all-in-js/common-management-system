@@ -3,6 +3,7 @@ import MongoDB from 'mongodb';
 const existsSystemModule = ['/users', '/system', '/docs'];
 
 interface ModuleParams {
+  id?: string;
   name?: string;
   path?: string;
   using?: number;
@@ -12,6 +13,7 @@ interface ModuleParams {
  */
 export async function addModule(cx: KoaContext, vars: ModuleParams) {
   let {
+    id,
     name,
     path = '',
     using = 1
@@ -33,8 +35,21 @@ export async function addModule(cx: KoaContext, vars: ModuleParams) {
     path = `/${path}`;
   }
 
+  let exists: boolean = existsSystemModule.includes(path);
+
   const mod = await cx.$system.findOne({ path });
-  if (mod || existsSystemModule.includes(path)) {
+  if (id) {
+    // 编辑
+    if (mod && !mod._id.equals(id)) {
+      exists = true;
+    }
+  } else {
+    // 新建
+    if (mod) {
+      exists = true;
+    }
+  }
+  if (exists) {
     const {
       code,
       msg
@@ -45,20 +60,35 @@ export async function addModule(cx: KoaContext, vars: ModuleParams) {
     }
   }
 
-  // 新增数据
-  await cx.$system.insertOne({
-    name,
-    path,
-    using,
-    createTime: Date.now()
-  });
+  if (id) {
+    // 编辑
+    await cx.$system.updateOne(
+      { 
+        _id: new MongoDB.ObjectID(id)
+      }, {
+        $set: {
+          name,
+          path,
+          using
+        }
+      }
+    );
+  } else {
+    // 新增数据
+    await cx.$system.insertOne({
+      name,
+      path,
+      using,
+      createTime: Date.now()
+    });
+  }
 
   const {
     code
   } = cx.codes.SUCCESS;
   return {
     code,
-    msg: '模块新建成功'
+    msg: `模块${id ? '编辑' : '新建'}成功`
   } 
 }
 

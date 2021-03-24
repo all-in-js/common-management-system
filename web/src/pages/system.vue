@@ -27,7 +27,6 @@
     </template>
     <template v-slot:right>
       <fetch-data
-        :use-loading="false"
         ref="getModulesRef"
         url="api/modules"
         :params="searchForm">
@@ -167,6 +166,7 @@ export default defineComponent({
 
     async function showEditModule(row) {
       state.editData = {
+        id: row._id,
         name: row.name,
         path: row.path,
         using: row.using
@@ -192,17 +192,5 @@ export default defineComponent({
 })
 </script>
 <style lang="scss" scoped>
-.result-head {
-  padding-right: 20px;
-  line-height: 60px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-.using {
-  color: #1eb51e;
-}
-.forbidden {
-  color: #bbbbbb;
-}
+
 </style>

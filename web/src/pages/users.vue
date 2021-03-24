@@ -21,59 +21,64 @@
       </search-form>
     </template>
     <template v-slot:right>
-      <div class="result-head">
-        <span>结果列表：共 5 条</span>
-        <a-button type="primary">新建用户</a-button>
-      </div>
-      <a-table
-        row-key="_id"
-        :data-source="dataSource"
-        :columns="columns"
-        ></a-table>
+      <fetch-data
+        ref="getUsersRef"
+        url="api/userList">
+        <template #data="{ res, loading }">
+          <div class="result-head">
+            <span>结果列表：共 {{ res.total || 0 }} 条</span>
+            <div class="result-ctrls">
+              <a-button
+                type="primary">新建用户</a-button>
+            </div>
+          </div>
+          <a-table
+            row-key="_id"
+            :loading="loading"
+            :data-source="res.data"
+            :columns="columns"
+            :scroll="{y: scrollY}"
+            :pagination="getPagination(res.total)">
+            <template v-slot:using="{ text }">
+              <span class="using" v-if="text === 1">启用中</span>
+              <span class="forbidden" v-else>禁用中</span>
+            </template>
+            <template v-slot:operation="{ record }">
+              <div>
+                <a-button
+                  type="link">编辑</a-button>
+                <a-popconfirm
+                  title="确认删除该模块吗？"
+                  ok-text="确定"
+                  cancel-text="取消">
+                  <a-button type="link">删除</a-button>
+                </a-popconfirm>
+              </div>
+            </template>
+          </a-table>
+        </template>
+      </fetch-data>
     </template>
-    <a-modal
-      v-model:visible="showCreateUser"
-      title="新建用户"
-      >
-      
-    </a-modal>
+    <create-user></create-user>
   </content-frame>
 </template>
 <script>
-import { defineComponent, reactive, toRefs } from 'vue'
+import { defineComponent, reactive, toRefs, ref } from 'vue'
 import ContentFrame from '../components/content-frame.vue'
 import SearchForm from '../components/search-form.vue'
+import CreateUser from '../components/create-user.vue'
 
 export default defineComponent({
   components: {
     ContentFrame,
+    CreateUser,
     SearchForm
   },
   setup() {
+    const scrollY = window.innerHeight - 240;
+    const getUsersRef = ref();
     const state = reactive({
-      dataSource: [
-        {
-          _id: 1,
-          name: '12311',
-          role: 1,
-          authList: 'qwqwqw',
-          status: 1
-        },
-        {
-          _id: 2,
-          name: 'ssaasssa',
-          role: 1,
-          authList: 'qwqwqw',
-          status: 1
-        },
-        {
-          _id: 3,
-          name: 'assas',
-          role: 1,
-          authList: 'qwqwqw',
-          status: 1
-        }
-      ],
+      scrollY,
       columns: [
         {
           title: '用户名',
@@ -104,7 +109,21 @@ export default defineComponent({
       showCreateUser: false,
       status: '0'
     });
+
+    function getPagination(total) {
+      return {
+        total,
+        pageSize: 30,
+        onChange(page, pageSize) {
+          state.searchForm.pageSize = pageSize;
+          state.searchForm.pageNo = page;
+          getModules();
+        }
+      }
+    }
     return {
+      getUsersRef,
+      getPagination,
       reset() {
         console.log('reset');
       },
@@ -117,11 +136,5 @@ export default defineComponent({
 })
 </script>
 <style lang="scss" scoped>
-.result-head {
-  padding-right: 20px;
-  line-height: 60px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
+
 </style>

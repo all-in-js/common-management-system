@@ -33,3 +33,17 @@ body {
 #app {
   height: 100%;
 }
+
+.result-head {
+  padding-right: 20px;
+  line-height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.using {
+  color: #1eb51e;
+}
+.forbidden {
+  color: #bbbbbb;
+}

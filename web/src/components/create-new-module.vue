@@ -2,7 +2,10 @@
   <a-modal
     v-model:visible="showCreateNewModule"
     @cancel="closeCreateNewModule"
-    @ok="submit">
+    @ok="submit"
+    title="新建模块"
+    ok-text="确定"
+    cancel-text="取消">
     <a-form
       ref="formRef"
       :model="formState"
@@ -14,14 +17,16 @@
         label="模块名称">
         <a-input
           v-model:value="formState.name"
-          placeholder="请输入模块名称"></a-input>
+          placeholder="请输入模块名称"
+          autocomplete="off"></a-input>
       </a-form-item>
       <a-form-item
         name="path"
         label="模块路径">
         <a-input
           v-model:value="formState.path"
-          placeholder="请输入模块路径"></a-input>
+          placeholder="请输入模块路径"
+          autocomplete="off"></a-input>
       </a-form-item>
       <a-form-item
         using="using"
@@ -48,6 +53,7 @@ export default defineComponent({
     const state = reactive({
       showCreateNewModule: false,
       formState: {
+        id: '',
         name: '',
         path: '',
         using: 1
@@ -59,6 +65,7 @@ export default defineComponent({
         state.formState = v as any;
       } else {
         state.formState = {
+          id: '',
           name: '',
           path: '',
           using: 1
@@ -132,7 +139,7 @@ export default defineComponent({
 <style lang="scss" scoped>
 .new-module-form {
   width: 400px;
-  margin: 50px auto 0;
+  margin: 20px auto 0;
   .ant-input {
     width: 270px;
   }

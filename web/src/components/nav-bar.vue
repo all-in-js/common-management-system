@@ -5,6 +5,19 @@
       <span class="nav-logo-txt">CMS</span>
     </div>
     <div class="nav-right-items">
+      <fetch-data
+        url="api/modules">
+        <template v-slot:data="{ res }">
+          <template
+            v-for="item of res.data">
+            <router-link
+              v-if="item.using === 1"
+              :to="item.path" class="nav-item">
+              {{ item.name }}
+            </router-link>    
+          </template>
+        </template>
+      </fetch-data>
       <router-link to="/users" class="nav-item">用户管理</router-link>
       <router-link to="/system" class="nav-item">系统管理</router-link>
       <a target="_blank" href="https://github.com/all-in-js/common-management-system" class="nav-item">Github</a>
