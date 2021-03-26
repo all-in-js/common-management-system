@@ -1,19 +1,21 @@
 <template>
   <a-modal
+    @ok="submit"
     v-model:visible="showCreateUser"
     title="新建用户"
     ok-text="确定"
     cancel-text="取消">
     <a-form
+      ref="formRef"
       :model="formState"
       :rules="rules"
       :label-col="{ span: 6 }"
       class="create-user">
       <a-form-item
-        name="name"
+        name="username"
         label="用户名">
         <a-input
-          v-model:value="formState.name"
+          v-model:value="formState.username"
           placeholder="请输入用户名"
           autocomplete="off"></a-input>
       </a-form-item>
@@ -45,7 +47,7 @@
               <template v-for="item of res.data">
                 <a-checkbox
                   v-if="item.using === 1"
-                  :value="item._id">{{ item.name }}</a-checkbox>
+                  :value="item.path">{{ item.name }}</a-checkbox>
               </template>
             </a-checkbox-group>
           </template>  
@@ -55,21 +57,37 @@
   </a-modal>
 </template>
 <script lang="ts">
-import { defineComponent, reactive, toRefs } from 'vue'
+import { ComponentInternalInstance, getCurrentInstance, defineComponent, reactive, toRefs, toRaw, ref } from 'vue'
 
 export default defineComponent({
   setup() {
+    const instance: ComponentInternalInstance = getCurrentInstance();
+    const cxProps = instance.appContext.config.globalProperties;
+    const formRef = ref();
     const state = reactive({
-      showCreateUser: true,
+      showCreateUser: false,
       formState: {
-        name: '',
+        username: '',
         role: 2,
-        using: 1
+        using: 1,
+        authList: []
       }
     });
 
     const rules = {
-
+      username: [
+        {
+          required: true,
+          trigger: 'blur',
+          message: '请输入用户名'
+        }
+      ],
+      authList: [
+        {
+          required: true,
+          message: '请选择应用模块'
+        }
+      ]
     };
 
     const roles = [
@@ -83,8 +101,36 @@ export default defineComponent({
       }
     ];
 
+    const toggleNewUser = function() {
+      state.showCreateUser = !state.showCreateUser;
+    }
+
+    const addUser = async function(data) {
+      const {
+        code,
+        msg
+      } = await cxProps.$fetch.post('api/addUser', data);
+
+      if (code === 1000) {
+        cxProps.$message.success(msg);
+      } else {
+        cxProps.$message.error(msg);
+      }
+    }
+
+    const submit = function() {
+      formRef.value.validate()
+      .then(() => {
+        const formData = toRaw(state.formState);
+        addUser(formData); 
+      });
+    }
     return {
       roles,
+      rules,
+      submit,
+      formRef,
+      toggleNewUser,
       ...toRefs(state)
     }
   },

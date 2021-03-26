@@ -9,34 +9,35 @@ function randColor() {
  * 新建用户
  * {
  *  username: 用户名
- *  password: 密码，存md5值
  *  role: 用户类型，1: 管理员，2: 用户
  *  using: 是否启用
+ *  authList: 权限列表
  * }
  */
 interface NewUserParams {
-  username: string;
-  password: string;
-  role: number;
-  using: boolean;
+  username?: string;
+  password?: string;
+  role?: number;
+  using?: boolean;
+  authList?: string[]
 }
 export async function addUser(cx: KoaContext, vars: NewUserParams) {
   const {
     username,
-    password,
     role,
-    using
+    using,
+    authList
   } = vars;
 
-  if (!username || !password) {
+  if (!username || !(authList && authList.length)) {
     const {
       code,
       msg
     } = cx.codes.INVALID_REQUEST_PARAMS;
     return {
       code,
-      msg: `${msg}: 'username' and 'password' expected.`,
-      data: null
+      msg: `${msg}: 'username' and 'authList' expected.`,
+      data: []
     };
   }
 
@@ -52,12 +53,14 @@ export async function addUser(cx: KoaContext, vars: NewUserParams) {
     };
   }
 
-  const pwdHash = md5(password);
+  // 默认密码为123456
+  const pwdHash = md5('123456');
   await cx.$user.insertOne({
     username,
     password: pwdHash,
     role,
     using,
+    authList,
     imgColor: `rgb(${randColor()},${randColor()},${randColor()})`,
     createTime: Date.now(),
     creator: ''
@@ -70,7 +73,7 @@ export async function addUser(cx: KoaContext, vars: NewUserParams) {
   return {
     code,
     msg: '用户新建成功',
-    data: null
+    data: []
   };
 }
 
@@ -113,6 +116,18 @@ export async function userList(cx: KoaContext, vars: SearchUserParams) {
   }
 
   const data = await cx.$user.find(query).sort({createTime: -1}).toArray();
+
+  if (data.length) {
+    for(const item of data) {
+      const { authList = [] } = item;
+      if (authList.length) {
+        for (const [ins, authItem] of authList.entries()) {
+          const mod = await cx.$system.findOne({ path: authItem });
+          authList[ins] = mod;
+        }
+      }
+    }
+  }
 
   return {
     code: cx.codes.SUCCESS.code,

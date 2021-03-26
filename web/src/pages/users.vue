@@ -4,6 +4,7 @@
       <search-form
         @reset="reset"
         :back-icon="false"
+        :search-form="searchForm"
         title="用户管理">
         <a-form
           layout="vertical">
@@ -24,11 +25,12 @@
       <fetch-data
         ref="getUsersRef"
         url="api/userList">
-        <template #data="{ res, loading }">
+        <template v-slot:data="{ res, loading }">
           <div class="result-head">
             <span>结果列表：共 {{ res.total || 0 }} 条</span>
             <div class="result-ctrls">
               <a-button
+                @click="showCreateUser"
                 type="primary">新建用户</a-button>
             </div>
           </div>
@@ -39,6 +41,9 @@
             :columns="columns"
             :scroll="{y: scrollY}"
             :pagination="getPagination(res.total)">
+            <template v-slot:role="{ text }">
+              {{ ['', '管理员', '用户'][text] }}
+            </template>
             <template v-slot:using="{ text }">
               <span class="using" v-if="text === 1">启用中</span>
               <span class="forbidden" v-else>禁用中</span>
@@ -59,7 +64,8 @@
         </template>
       </fetch-data>
     </template>
-    <create-user></create-user>
+    <create-user
+      ref="createUserRef"></create-user>
   </content-frame>
 </template>
 <script>
@@ -77,36 +83,53 @@ export default defineComponent({
   setup() {
     const scrollY = window.innerHeight - 240;
     const getUsersRef = ref();
+    const createUserRef = ref();
     const state = reactive({
+      datas: [ { "_id": "605d9655fb266956a0c88495", "username": "cscs", "password": "e10adc3949ba59abbe56e057f20f883e", "role": 2, "using": 1, "authList": [ { "__v_isVNode": true, "__v_skip": true, "props": null, "key": null, "ref": null, "scopeId": null, "children": "605078adc00da5298037d3f9", "target": null, "targetAnchor": null, "staticCount": 0, "shapeFlag": 8, "patchFlag": 0, "dynamicProps": null, "dynamicChildren": null, "appContext": null, "dirs": null, "transition": null, "component": null, "suspense": null, "ssContent": null, "ssFallback": null, "el": "[object Text]", "anchor": null } ], "imgColor": "rgb(22,186,227)", "createTime": 1616746069809, "creator": "" } ],
       scrollY,
+      searchForm: {
+        name: '',
+        using: 1
+      },
       columns: [
         {
           title: '用户名',
-          dataIndex: 'name',
+          dataIndex: 'username',
           width: '20%'
         },
         {
           title: '角色',
           dataIndex: 'role',
+          slots: {
+            customRender: 'role'
+          },
           width: '20%'
         },
         {
           title: '权限列表',
           dataIndex: 'authList',
+          slots: {
+            customRender: 'authList'
+          },
           width: '20%'
         },
         {
           title: '状态',
-          dataIndex: 'status',
+          dataIndex: 'using',
+          slots: {
+            customRender: 'using'
+          },
           width: '20%'
         },
         {
           title: '操作',
           dataIndex: 'operation',
+          slots: {
+            customRender: 'operation'
+          },
           width: '20%'
         }
       ],
-      showCreateUser: false,
       status: '0'
     });
 
@@ -115,20 +138,24 @@ export default defineComponent({
         total,
         pageSize: 30,
         onChange(page, pageSize) {
-          state.searchForm.pageSize = pageSize;
-          state.searchForm.pageNo = page;
+          state.formState.pageSize = pageSize;
+          state.formState.pageNo = page;
           getModules();
         }
       }
     }
     return {
       getUsersRef,
+      createUserRef,
       getPagination,
       reset() {
         console.log('reset');
       },
       search() {
         console.log('search');
+      },
+      showCreateUser() {
+        createUserRef.value.toggleNewUser();
       },
       ...toRefs(state)
     }
