@@ -2,10 +2,10 @@
 # yarn lockfile v1
 
 
-"@all-in-js/fetch-functions-api@^1.0.3":
-  version "1.0.3"
-  resolved "http://npm-registry.megvii-inc.com/@all-in-js%2ffetch-functions-api/-/fetch-functions-api-1.0.3.tgz#470b8721a5ddf83318be239c00e024dc64cb74c2"
-  integrity sha1-RwuHIaXd+DMYviOcAOAk3GTLdMI=
+"@all-in-js/fetch-functions-api@^1.0.4":
+  version "1.0.4"
+  resolved "http://npm-registry.megvii-inc.com/@all-in-js%2ffetch-functions-api/-/fetch-functions-api-1.0.4.tgz#efd58ba3108c31f1cbaeeeab6e6d425862a274b1"
+  integrity sha1-79WLoxCMMfHLru6rbm1CWGKidLE=
   dependencies:
     deepmerge "^4.2.2"
 

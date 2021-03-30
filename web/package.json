@@ -7,7 +7,7 @@
     "serve": "vite preview"
   },
   "dependencies": {
-    "@all-in-js/fetch-functions-api": "^1.0.3",
+    "@all-in-js/fetch-functions-api": "^1.0.4",
     "ant-design-vue": "^2.0.1",
     "sass": "^1.32.8",
     "vue": "^3.0.5",

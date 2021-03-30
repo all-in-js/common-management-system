@@ -27,7 +27,8 @@
           <a-button
             type="primary"
             block
-            size="large">
+            size="large"
+            @click="login">
             登 录
           </a-button>
         </a-form-item>
@@ -35,7 +36,24 @@
     </div>
   </div>
 </template>
+<script lang="ts">
+import { defineComponent, ComponentInternalInstance, getCurrentInstance } from 'vue'
 
+export default defineComponent({
+  setup() {
+    const instance: ComponentInternalInstance = getCurrentInstance();
+    const cxProps = instance.appContext.config.globalProperties;
+    return {
+      login() {
+        cxProps.$login.post('api/login', {
+          username: 'test',
+          password: '123456'
+        });
+      }
+    }
+  }
+});
+</script>
 <style lang="scss" scoped>
 .login-container {
   height: 100%;

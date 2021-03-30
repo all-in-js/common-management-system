@@ -1,6 +1,6 @@
 import { MongoClient } from 'mongodb';
 
-export default function initCollections(app: App, mongoClient: MongoClient) {
+export default async function initCollections(app: App, mongoClient: MongoClient) {
   /**
    * 初始化collection
    */
@@ -13,4 +13,19 @@ export default function initCollections(app: App, mongoClient: MongoClient) {
    */
   app.context.$user = $collection('users');
   app.context.$system = $collection('system');
+  app.context.$auth = $collection('auth');
+
+  const authRefresh = $collection('auth-refresh');
+
+  app.context.$authRefresh = authRefresh;
+  
+  // 设置数据过期时间
+  authRefresh.dropIndex('createTime_1');
+  
+  authRefresh.createIndex({
+    createTime: 1
+  }, {
+    // token 刷新时间
+    expireAfterSeconds: 60 * 30
+  }, () => {});
 }

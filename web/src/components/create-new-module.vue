@@ -3,7 +3,7 @@
     v-model:visible="showCreateNewModule"
     @cancel="closeCreateNewModule"
     @ok="submit"
-    title="新建模块"
+    :title="`${data ? '编辑' : '新建'}模块`"
     ok-text="确定"
     cancel-text="取消">
     <a-form

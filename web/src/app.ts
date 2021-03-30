@@ -11,10 +11,14 @@ import 'ant-design-vue/dist/antd.css'
 import './vars.css'
 import './app.scss'
 
-const $fetch = new Fetch('/api/functions');
+const $fetch = new Fetch('/api/functions', {
+  debugApi: true
+});
+const $login = new Fetch('/api/login');
 const app = createApp(App)
 
 app.config.globalProperties.$fetch = $fetch;
+app.config.globalProperties.$login = $login;
 app.config.globalProperties.$message = message;
 
 const router = createRouter({

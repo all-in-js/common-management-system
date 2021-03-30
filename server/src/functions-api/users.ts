@@ -1,6 +1,6 @@
 
 import md5 from 'md5';
-import { ObjectID } from 'mongodb';
+import { ObjectID, ObjectQuerySelector, QuerySelector } from 'mongodb';
 
 function randColor() {
   return Math.round(Math.random() * 255);
@@ -15,6 +15,7 @@ function randColor() {
  * }
  */
 interface NewUserParams {
+  id?: string;
   username?: string;
   password?: string;
   role?: number;
@@ -23,6 +24,7 @@ interface NewUserParams {
 }
 export async function addUser(cx: KoaContext, vars: NewUserParams) {
   const {
+    id,
     username,
     role,
     using,
@@ -41,30 +43,56 @@ export async function addUser(cx: KoaContext, vars: NewUserParams) {
     };
   }
 
-  const userInfo = await cx.$user.findOne({username});
-  if (userInfo) {
+  const user = await cx.$user.findOne({ username });
+  let exists: boolean = false;
+  if (id) {
+    // 编辑
+    if (user && !user._id.equals(id)) {
+      exists = true;
+    }
+  } else {
+    if (user) {
+      exists = true;
+    }
+  }
+
+  if (exists) {
     const {
       code,
       msg
     } = cx.codes.RESOURCE_REPEAT;
     return {
       code,
-      msg: `${msg}: 用户名重复` 
-    };
+      msg: `${msg}: 用户名重复`
+    }
   }
 
-  // 默认密码为123456
-  const pwdHash = md5('123456');
-  await cx.$user.insertOne({
-    username,
-    password: pwdHash,
-    role,
-    using,
-    authList,
-    imgColor: `rgb(${randColor()},${randColor()},${randColor()})`,
-    createTime: Date.now(),
-    creator: ''
-  });
+  if (id) {
+    // 编辑
+    await cx.$user.updateOne({
+      _id: new ObjectID(id)
+    }, {
+      $set: {
+        username,
+        using,
+        role,
+        authList
+      }
+    });
+  } else {
+    // 默认密码为123456
+    const pwdHash = md5('123456');
+    await cx.$user.insertOne({
+      username,
+      password: pwdHash,
+      role,
+      using,
+      authList,
+      imgColor: `rgb(${randColor()},${randColor()},${randColor()})`,
+      createTime: Date.now(),
+      creator: ''
+    });
+  }
 
   const {
     code
@@ -72,7 +100,7 @@ export async function addUser(cx: KoaContext, vars: NewUserParams) {
 
   return {
     code,
-    msg: '用户新建成功',
+    msg: `${id ? '编辑' : '新建'}成功`,
     data: []
   };
 }
@@ -89,30 +117,27 @@ export async function addUser(cx: KoaContext, vars: NewUserParams) {
  */
 interface SearchUserParams {
   username?: string;
-  creator?: string;
-  using?: boolean;
+  using?: number;
   role?: number;
 }
 export async function userList(cx: KoaContext, vars: SearchUserParams) {
   const {
     username,
-    creator,
     using,
     role
   } = vars;
-  const query: SearchUserParams = {};
+  const query: ObjectQuerySelector<SearchUserParams> = {};
 
   if(username) {
-    query.username = username;
+    query.username = {
+      $regex: new RegExp(username, 'ig')
+    };
   }
-  if (creator) {
-    query.creator = creator;
+  if (using !== undefined && using !== 0) {
+    query.using = using as QuerySelector<number>;
   }
-  if (using !== undefined) {
-    query.using = using;
-  }
-  if (role !== undefined) {
-    query.role = role;
+  if (role !== undefined && role !== 0) {
+    query.role = role as QuerySelector<number>;
   }
 
   const data = await cx.$user.find(query).sort({createTime: -1}).toArray();
@@ -129,9 +154,12 @@ export async function userList(cx: KoaContext, vars: SearchUserParams) {
     }
   }
 
+  const total = await cx.$user.countDocuments(query);
+
   return {
     code: cx.codes.SUCCESS.code,
-    data
+    data,
+    total
   };
 }
 
@@ -142,7 +170,7 @@ export async function userList(cx: KoaContext, vars: SearchUserParams) {
  * }
  */
 interface DeleteUserParams {
-  id: string;
+  id?: string;
 }
 export async function deleteUser(cx: KoaContext, vars: DeleteUserParams) {
   if (!vars.id) {
@@ -157,11 +185,9 @@ export async function deleteUser(cx: KoaContext, vars: DeleteUserParams) {
   }
   const _id = new ObjectID(vars.id);
   await cx.$user.deleteOne({_id});
-  await cx.$project.deleteMany({owner: _id});
-  await cx.$svg.deleteMany({owner: _id});
   return {
     code: cx.codes.SUCCESS.code,
-    msg: '已删除该用户及其名下相关资源'
+    msg: '删除成功'
   };
 }
 

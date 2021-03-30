@@ -21,7 +21,8 @@ enum CodesKey {
   NOT_FOUND = 'NOT_FOUND',
   RESOURCE_REPEAT = 'RESOURCE_REPEAT',
   INVALID_REQUEST_PARAMS = 'INVALID_REQUEST_PARAMS',
-  UNAUTHORIZED = 'UNAUTHORIZED'
+  UNAUTHORIZED = 'UNAUTHORIZED',
+  FORBIDDEN = 'FORBIDDEN'
 }
 
 export type IcodesMap = {
@@ -45,6 +46,10 @@ export default function initCodes(app: App) {
     [CodesKey.UNAUTHORIZED]: {
       code: 1003,
       msg: CodesKey.UNAUTHORIZED
+    },
+    [CodesKey.FORBIDDEN]: {
+      code: 1004,
+      msg: CodesKey.FORBIDDEN
     },
     [CodesKey.INVALID_PARAMS_TYPE]: {
       code: 2001,

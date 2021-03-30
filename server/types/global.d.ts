@@ -14,6 +14,8 @@ declare global {
     $user: MongoDB.Collection;
     $system: MongoDB.Collection;
     $jwt: IJWT;
+    $auth: MongoDB.Collection;
+    $authRefresh: MongoDB.Collection;
     codes: IcodesMap;
   }
   type KoaContext = ExtendContext<IExtendContext>;

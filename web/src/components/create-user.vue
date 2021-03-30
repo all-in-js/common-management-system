@@ -2,7 +2,7 @@
   <a-modal
     @ok="submit"
     v-model:visible="showCreateUser"
-    title="新建用户"
+    :title="`${data ? '编辑' : '新建'}用户`"
     ok-text="确定"
     cancel-text="取消">
     <a-form
@@ -57,10 +57,13 @@
   </a-modal>
 </template>
 <script lang="ts">
-import { ComponentInternalInstance, getCurrentInstance, defineComponent, reactive, toRefs, toRaw, ref } from 'vue'
+import { ComponentInternalInstance, getCurrentInstance, defineComponent, reactive, toRefs, toRaw, ref, watch } from 'vue'
 
 export default defineComponent({
-  setup() {
+  props: {
+    data: Object
+  },
+  setup(props, cx) {
     const instance: ComponentInternalInstance = getCurrentInstance();
     const cxProps = instance.appContext.config.globalProperties;
     const formRef = ref();
@@ -101,11 +104,24 @@ export default defineComponent({
       }
     ];
 
-    const toggleNewUser = function() {
+    watch(() => props.data, (v) => {
+      if (v) {
+        state.formState = v as any;
+      } else {
+        state.formState = {
+          username: '',
+          role: 2,
+          using: 1,
+          authList: []
+        }
+      }
+    });
+
+    function toggleNewUser() {
       state.showCreateUser = !state.showCreateUser;
     }
 
-    const addUser = async function(data) {
+    async function addUser(data) {
       const {
         code,
         msg
@@ -113,18 +129,26 @@ export default defineComponent({
 
       if (code === 1000) {
         cxProps.$message.success(msg);
+        resetFields();
+        cx.emit('postAddUser');
+        toggleNewUser();
       } else {
         cxProps.$message.error(msg);
       }
     }
 
-    const submit = function() {
+    function submit() {
       formRef.value.validate()
       .then(() => {
         const formData = toRaw(state.formState);
-        addUser(formData); 
+        addUser(formData);
       });
     }
+
+    function resetFields() {
+      formRef.value.resetFields();
+    }
+
     return {
       roles,
       rules,

@@ -3,8 +3,10 @@ import cors from '@koa/cors';
 import bodyparser from 'koa-bodyparser';
 import { functionsApiMiddleware } from '@all-in-js/koa-functions-api';
 import init from './init';
+import auth from './middlewares/auth';
 import * as userFunctions from './functions-api/users';
 import * as systemFunctions from './functions-api/system';
+import * as loginFunctions from './functions-api/login';
 
 const app = new Koa<{}, KoaContext>();
 
@@ -28,6 +30,7 @@ app.use(cors());
 
 app.use(bodyparser());
 
+app.use(auth);
 // app.use(async (cx, next) => {
 //   const { path } = cx;
 //   if (path.startsWith('/api')) {
@@ -68,7 +71,12 @@ app.use(bodyparser());
 //     await next();
 //   }
 // });
-
+app.use(functionsApiMiddleware<IExtendContext>({
+  path: '/api/login',
+  functions: [
+    ...Object.values(loginFunctions)
+  ]
+}));
 app.use(functionsApiMiddleware<IExtendContext>({
   // path: '/api/functions',
   // namespace: 'api',
